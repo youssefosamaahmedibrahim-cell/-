@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>التنين الجحيمي — Infernal Dragon | Z X C V</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="./css/style.css" />
+<!-- three.js مضمّن محلياً (محتاج إنترنت) -->
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three.module.js",
+    "three/addons/": "./vendor/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<canvas id="scene"></canvas>
+
+<!-- طبقة أرقام الضرر -->
+<div id="damage-layer"></div>
+
+<!-- معلومات فوق -->
+<div id="topbar">
+  <div class="title">🐉 التنين الجحيمي <span>Infernal Dragon</span></div>
+  <div class="hint">
+    <b>WASD</b> حركة · <b>Shift</b> جري · <b>F</b> طيران · <b>Space</b> طلوع ·
+    <b>E</b> زئير · <b>ماوس</b> لف الكاميرا · <b>عجلة</b> زوم
+  </div>
+  <div id="states">
+    <span id="flyState" class="pill">أرض 🐾</span>
+    <span id="awaken" class="pill awaken" style="display:none">⚡ استيقاظ التنين ×1.35</span>
+  </div>
+</div>
+
+<!-- شريط المهارات -->
+<div id="bar"></div>
+
+<div id="loading">جارِ إشعال النار…</div>
+<div id="fps"></div>
+<div id="err"></div>
+<script>
+  function showErr(msg) {
+    const el = document.getElementById('err');
+    el.style.display = 'block';
+    el.textContent = '⚠ ' + msg;
+    document.getElementById('loading').style.display = 'none';
+  }
+  addEventListener('error', e => showErr(e.message || 'خطأ غير معروف'));
+  addEventListener('unhandledrejection', e => showErr((e.reason && e.reason.message) || 'فشل تحميل الوحدات'));
+</script>
+
+<script type="module" src="./js/main.js"></script>
+</body>
+</html>
