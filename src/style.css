@@ -42,7 +42,7 @@ body.is-ready .hud { opacity: 1; }
 .view-select { gap: 9px; }
 .control-label { padding: 0 10px 0 2px; color: #8e817b; font-size: 10px; white-space: nowrap; }
 .views { gap: 2px; }
-.view-btn, .tool-btn, .download-btn { border: 1px solid transparent; color: #a99f9a; background: transparent; cursor: pointer; transition: color .2s, background .2s, border-color .2s; }
+.view-btn, .tool-btn, .download-btn, .blend-btn { border: 1px solid transparent; color: #a99f9a; background: transparent; cursor: pointer; transition: color .2s, background .2s, border-color .2s; }
 .view-btn { min-height: 38px; padding: 0 13px; border-radius: 8px; font-size: 11px; white-space: nowrap; }
 .view-btn:hover, .tool-btn:hover { color: #fff; background: #342a29; }
 .view-btn.is-active { color: #fff3ea; background: #49302a; border-color: #70483b; }
@@ -50,9 +50,12 @@ body.is-ready .hud { opacity: 1; }
 .tools { gap: 3px; }
 .tool-btn { width: 36px; height: 38px; display: grid; place-items: center; border-radius: 8px; }
 .tool-btn.is-on { color: #f2bf91; background: #49302a; }
-.tool-btn svg, .download-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tool-btn svg, .download-btn svg, .blend-btn svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
 .download-btn { height: 38px; padding: 0 12px; display: flex; align-items: center; gap: 7px; color: #f5e6d9; border-color: #755345; border-radius: 8px; background: #44302a; font-size: 10px; white-space: nowrap; }
 .download-btn:hover { background: #604235; color: #fff; }
+.blend-btn { height: 38px; padding: 0 11px; display: inline-flex; align-items: center; gap: 7px; color: #e3d6cb; border-color: #4a3a34; border-radius: 8px; background: #2b2220; font-size: 10px; text-decoration: none; white-space: nowrap; }
+.blend-btn:hover { background: #3a2d29; border-color: #755345; color: #fff; }
+.blend-btn svg { fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
 .hint { color: #847b76; margin: 0; font-size: 10px; }
 .hint-icon { color: #c5906e; font-size: 13px; vertical-align: -1px; margin-left: 4px; }
 .hint-sep { color: #5b504b; margin: 0 6px; }
@@ -85,6 +88,7 @@ body.is-dragging .hint { opacity: .45; }
   .view-btn { flex: 1 1 auto; padding: 0 7px; font-size: 10px; }
   .tools { width: 100%; justify-content: center; border-top: 1px solid #3d3330; padding-top: 6px; }
   .tool-btn { width: 42px; height: 32px; }
+  .blend-btn { height: 32px; padding: 0 9px; }
   .download-btn { height: 32px; margin-right: 6px; }
   .hint { font-size: 9px; }
   .toast { bottom: 150px; }

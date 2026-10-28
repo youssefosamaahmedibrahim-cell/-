@@ -32,6 +32,48 @@ npm test
 - خامات مولّدة محلياً وإضاءة للموديل، مع خريطة انعكاس لا تظهر كخلفية.
 - تجميع الأجزاء الثابتة لتقليل طلبات الرسم، وجودة تتكيف مع الأجهزة الأبطأ.
 
+## نموذج Blender
+
+المشهد نفسه متاح كملف Blender 4.2 جاهز للفتح والتعديل، بنفس المبنى ثلاثي الأبعاد وليس صورة مسطحة:
+
+- `public/models/secret-shop.blend` — المشهد الكامل (الخط والصور محزومة داخل الملف)، وخمس كاميرات جاهزة: `Hero` و`Front` و`Side` و`Close` و`Top`، ومحرك الريندر Cycles مع AgX.
+- `public/models/permanent-marker.ttf` — نفس خط اللافتة بصيغة يقبلها Blender.
+- زر **Blender** في شريط الأدوات ينزّل ملف `.blend` مباشرة من الصفحة.
+- لقطات جاهزة من الملف نفسه في `public/models/previews/` (الواجهة، قريب، أمامي، جانبي، من الأعلى).
+
+المجموعات داخل الملف:
+
+```text
+00_Platform           القاعدة الحجرية والدرجات المتوهجة والصخور
+01_Timber_Structure   الأعمدة والجدران والطابقان والمدخل
+02_Pagoda_Roofs       السقفان والقرميد والحواف المضيئة
+03_Facade_Windows     النوافذ المضيئة والمدخل المقوس
+04_Signage_Banners    اللافتة والتنين والرايات
+05_Lanterns_Chains    الفوانيس والسلاسل
+06_Interior           الرفوف والقوارير والصندوق داخل المتجر
+07_Props_Crystals     الصناديق والنباتات والكريستالات والشلال
+08_Lighting           إضاءة ليلية حمراء وذهبية
+09_Cameras            الكاميرات الجاهزة
+```
+
+ملاحظات على التصحيح:
+
+- السقف السفلي أصبح إطاراً حول الطابق العلوي والسقف الأعلى يبدأ فوقه بارتفاع كافٍ، فلم يبق أي تداخل بين السقفين أو بين السقف والدرابزين والأعمدة.
+- الرايات واللافتة والتنين مثبتة بسلاسل وأحزمة فعلية مرئية، فلا يظهر أي عنصر معلقاً في الهواء.
+- كل القطع شبكات قابلة للتعديل (بدون صور مقاومة للضوء أو billboards).
+
+إعادة توليد المشهد من الصفر (Blender 4.2 مثبت، أو وحدة `bpy`):
+
+```bash
+SHOP_ROOT=$PWD blender --background --python tools/blender/build_shop.py
+# نسخة GLB اختيارية للمحركات
+SHOP_GLB=1 SHOP_RENDER=0 SHOP_ROOT=$PWD blender --background --python tools/blender/build_shop.py
+# معاينات فقط من الملف المحفوظ
+SHOP_CAMS=hero,close SHOP_ROOT=$PWD blender --background --python tools/blender/preview.py
+```
+
+`public/models/permanent-marker.ttf` مشتق من خط `public/fonts` بنفس رخصة Apache-2.0 المرفقة.
+
 ## هيكل المشروع
 
 ```text
@@ -50,9 +92,17 @@ src/
     shop.js                # المبنى وتفاصيل الواجهة
     interior.js            # تفاصيل داخل المتجر
     dims.js                # الأبعاد المشتركة
+  models/                  # ملف Blender والنسخة GLB وخط اللافتة
+    secret-shop.blend
+    secret-shop.glb
+    permanent-marker.ttf
 public/
   concept/                 # الصور المرجعية الأصلية
   fonts/                   # الخط المحلي المستخدم في اللافتة وترخيصه
+tools/
+  blender/
+    build_shop.py          # يبني ملف Blender بالكامل برمجياً
+    preview.py             # يرندر لقطات من الملف المحفوظ
 ```
 
 الخط **Permanent Marker** من Font Diner ومرفق بترخيصه في `public/fonts/PERMANENT-MARKER-LICENSE.txt`.
