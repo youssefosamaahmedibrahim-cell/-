@@ -5,6 +5,7 @@
  */
 
 export const FONT_DISPLAY = '"Impact","Haettenschweiler","Arial Black","Segoe UI Black","DejaVu Sans",sans-serif';
+export const FONT_SIGN = '"Shop Sign","Impact","Arial Black",sans-serif';
 export const FONT_SERIF = '"Georgia","Times New Roman","DejaVu Serif",serif';
 export const FONT_SANS = '"Segoe UI","Helvetica Neue",Arial,"DejaVu Sans",sans-serif';
 
@@ -158,31 +159,43 @@ export function stoneTexture({ w = 512, h = 512, base = '#191318', tile = 128 } 
 export function roofTexture({ w = 512, h = 512 } = {}) {
   const c = makeCanvas(w, h);
   const ctx = c.getContext('2d');
-  const g = ctx.createLinearGradient(0, 0, 0, h);
-  g.addColorStop(0, '#3b3746');
-  g.addColorStop(0.55, '#2b2836');
-  g.addColorStop(1, '#201d29');
-  ctx.fillStyle = g;
+  ctx.fillStyle = '#17161e';
   ctx.fillRect(0, 0, w, h);
-
-  const cols = 14;
-  for (let i = 0; i < cols; i++) {
-    const x = (i / cols) * w;
-    const grd = ctx.createLinearGradient(x, 0, x + w / cols, 0);
-    grd.addColorStop(0, 'rgba(0,0,0,0.45)');
-    grd.addColorStop(0.38, 'rgba(150,150,175,0.22)');
-    grd.addColorStop(1, 'rgba(0,0,0,0.5)');
-    ctx.fillStyle = grd;
-    ctx.fillRect(x, 0, w / cols, h);
-    // خطوط الألواح الأفقية (بارزة)
-    for (let y = 0; y < h; y += h / 6) {
-      ctx.fillStyle = 'rgba(0,0,0,0.4)';
-      ctx.fillRect(x, y, w / cols, 3);
-      ctx.fillStyle = 'rgba(220,210,235,0.16)';
-      ctx.fillRect(x, y + 3, w / cols, 1.5);
+  const tileW = w / 8, tileH = h / 10;
+  // ألواح قرميد منفصلة ومتبادلة، مع حافة بارزة وخدوش دقيقة.
+  for (let row = 0; row < 10; row++) {
+    const offset = row % 2 ? tileW / 2 : 0;
+    for (let col = -1; col < 9; col++) {
+      const x = col * tileW + offset, y = row * tileH;
+      const variation = ((row * 17 + col * 11 + 120) % 9) * 2;
+      const gradient = ctx.createLinearGradient(x, y, x, y + tileH);
+      gradient.addColorStop(0, `rgb(${48 + variation},${45 + variation},${55 + variation})`);
+      gradient.addColorStop(0.7, `rgb(${31 + variation},${29 + variation},${38 + variation})`);
+      gradient.addColorStop(1, '#17151d');
+      ctx.fillStyle = gradient;
+      ctx.fillRect(x + 1, y + 1, tileW - 2, tileH - 2);
+      ctx.strokeStyle = 'rgba(4,3,8,0.8)';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x + 1, y + 1, tileW - 2, tileH - 2);
+      ctx.strokeStyle = 'rgba(205,190,196,0.16)';
+      ctx.lineWidth = 1.4;
+      ctx.beginPath();
+      ctx.moveTo(x + 5, y + 4);
+      ctx.lineTo(x + tileW - 5, y + 4);
+      ctx.moveTo(x + 4, y + 4);
+      ctx.lineTo(x + 4, y + tileH - 6);
+      ctx.stroke();
+      if ((row + col) % 3 === 0) {
+        ctx.strokeStyle = 'rgba(8,6,10,0.35)';
+        ctx.beginPath();
+        ctx.moveTo(x + tileW * 0.6, y + tileH * 0.25);
+        ctx.lineTo(x + tileW * 0.56, y + tileH * 0.46);
+        ctx.lineTo(x + tileW * 0.62, y + tileH * 0.6);
+        ctx.stroke();
+      }
     }
   }
-  paintNoise(ctx, w, h, { scale: 2.6, seed: 11, alpha: 0.07 });
+  paintNoise(ctx, w, h, { scale: 3.2, seed: 11, alpha: 0.045 });
   return c;
 }
 
@@ -310,14 +323,14 @@ export function signTexture({ w = 1400, h = 1000 } = {}) {
   };
 
   // SECRET
-  const secretSize = fit('SECRET', w * 0.70, 'bold', 'bold');
+  const secretSize = fit('SECRET', w * 0.70, '', '', FONT_SIGN);
   ctx.save();
   // نقصّ الرسم على شكل الدرع الداخلي
   path(inner);
   ctx.clip();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `bold ${secretSize}px ${FONT_DISPLAY}`;
+  ctx.font = `${secretSize}px ${FONT_SIGN}`;
   ctx.translate(cx, h * 0.425);
   ctx.transform(1, 0, -0.10, 1, 0, 0); // ميل خفيف زي اللوجو
   ctx.lineJoin = 'round';
@@ -331,25 +344,25 @@ export function signTexture({ w = 1400, h = 1000 } = {}) {
   }
   ctx.globalAlpha = 1;
   const tx = ctx.createLinearGradient(0, -secretSize * 0.42, 0, secretSize * 0.42);
-  tx.addColorStop(0, '#fff2f2');
-  tx.addColorStop(0.45, '#ff5d70');
-  tx.addColorStop(0.75, '#e3002b');
-  tx.addColorStop(1, '#ff9aa8');
+  tx.addColorStop(0, '#ff8990');
+  tx.addColorStop(0.45, '#ff3047');
+  tx.addColorStop(0.75, '#c90023');
+  tx.addColorStop(1, '#ff5262');
   ctx.fillStyle = tx;
   ctx.fillText('SECRET', 0, 0);
   ctx.lineWidth = 2.4;
-  ctx.strokeStyle = 'rgba(255,190,190,0.5)';
+  ctx.strokeStyle = 'rgba(255,135,135,0.45)';
   ctx.strokeText('SECRET', 0, 0);
   ctx.restore();
 
   // SHOP
-  const shopSize = fit('SHOP', w * 0.54, 'bold', 'bold');
+  const shopSize = fit('SHOP', w * 0.54, '', '', FONT_SIGN);
   ctx.save();
   path(inner);
   ctx.clip();
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.font = `bold ${shopSize}px ${FONT_DISPLAY}`;
+  ctx.font = `${shopSize}px ${FONT_SIGN}`;
   ctx.translate(cx, h * 0.635);
   ctx.transform(1, 0, -0.10, 1, 0, 0);
   ctx.strokeStyle = 'rgba(255,180,80,0.12)';
@@ -360,9 +373,9 @@ export function signTexture({ w = 1400, h = 1000 } = {}) {
   }
   ctx.globalAlpha = 1;
   const sg = ctx.createLinearGradient(0, -shopSize * 0.4, 0, shopSize * 0.4);
-  sg.addColorStop(0, '#fff8e0');
-  sg.addColorStop(0.5, '#ffd98d');
-  sg.addColorStop(1, '#e09a34');
+  sg.addColorStop(0, '#ffe5ac');
+  sg.addColorStop(0.5, '#ffc45e');
+  sg.addColorStop(1, '#dc8d28');
   ctx.fillStyle = sg;
   ctx.fillText('SHOP', 0, 0);
   ctx.lineWidth = 3.5;

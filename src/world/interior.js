@@ -23,28 +23,36 @@ function shelfUnit(M, { width = 2.4, height = 4.2, shelves = 4, depth = 0.55, x 
     g.add(box(width, 0.1, depth, M.woodTrim, 0, y, 0));
     g.add(box(width, 0.03, 0.04, M.neonSoft, 0, y + 0.07, depth / 2 + 0.01));
   }
-  // جوانب
-  for (const sx of [-1, 1]) g.add(box(0.12, height, depth, M.woodTrim, sx * width / 2, height / 2, 0));
+  // إطار خشبي منحوت حول الرفوف.
+  for (const sx of [-1, 1]) {
+    g.add(box(0.16, height, depth, M.woodTrim, sx * width / 2, height / 2, 0));
+    g.add(box(0.045, height - 0.15, 0.05, M.goldDark, sx * (width / 2 - 0.1), height / 2, depth / 2 + 0.03));
+  }
+  g.add(box(width + 0.18, 0.18, depth + 0.1, M.woodBeam, 0, height - 0.06, 0));
+  g.add(box(width + 0.1, 0.045, 0.05, M.goldDark, 0, height - 0.13, depth / 2 + 0.05));
 
   // بضائع مضيئة
   const bottles = { gold: [], purple: [], cyan: [] };
   for (let i = 0; i < shelves; i++) {
     const y = 0.6 + (i / (shelves - 1)) * (height - 1.1);
-    const count = 5;
+    const count = 7;
     for (let j = 0; j < count; j++) {
       const bx = -width / 2 + 0.32 + (j / (count - 1)) * (width - 0.64);
       const kind = rand(0, 1) > 0.55 ? 'gold' : rand(0, 1) > 0.4 ? 'purple' : 'cyan';
       bottles[kind].push({ x: bx, y, z: rand(-0.05, 0.08), sy: rand(0.8, 1.5), ry: rand(0, 3) });
     }
   }
-  const bodyGeo = new THREE.CylinderGeometry(0.07, 0.09, 0.34, 7);
-  bodyGeo.translate(0, 0.17, 0);
-  const neckGeo = new THREE.SphereGeometry(0.075, 7, 5);
-  neckGeo.translate(0, 0.36, 0);
+  const bodyGeo = new THREE.CylinderGeometry(0.095, 0.12, 0.25, 8);
+  bodyGeo.translate(0, 0.125, 0);
+  const neckGeo = new THREE.CylinderGeometry(0.045, 0.06, 0.1, 7);
+  neckGeo.translate(0, 0.29, 0);
+  const corkGeo = new THREE.CylinderGeometry(0.05, 0.05, 0.055, 7);
+  corkGeo.translate(0, 0.37, 0);
   const mk = (arr, mat) => {
     if (!arr.length) return;
     g.add(instanced(bodyGeo, mat, arr, { cast: false }));
     g.add(instanced(neckGeo, mat, arr, { cast: false }));
+    g.add(instanced(corkGeo, M.goldDark, arr, { cast: false }));
   };
   mk(bottles.gold, M.potionGold);
   mk(bottles.purple, M.potion);
@@ -74,6 +82,13 @@ export function createInterior() {
 
   const backWall = box(ROOM_W, ROOM_H, 0.3, M.woodWall, 0, FLOOR_Y + ROOM_H / 2, Z_BACK);
   group.add(backWall);
+  for (const x of [-6, -2.3, 2.3, 6]) {
+    group.add(box(0.2, ROOM_H, 0.24, M.woodBeam, x, FLOOR_Y + ROOM_H / 2, Z_BACK + 0.23));
+    group.add(box(0.28, 0.14, 0.3, M.goldDark, x, FLOOR_Y + 0.28, Z_BACK + 0.23));
+  }
+  for (const y of [0.35, ROOM_H - 0.25]) {
+    group.add(box(ROOM_W, 0.18, 0.2, M.woodBeam, 0, FLOOR_Y + y, Z_BACK + 0.24));
+  }
 
   for (const sx of [-1, 1]) {
     const side = box(0.3, ROOM_H, ROOM_D, M.woodWall, sx * ROOM_W / 2, FLOOR_Y + ROOM_H / 2, DIM.frontZ - ROOM_D / 2);
@@ -113,6 +128,9 @@ export function createInterior() {
     counter.add(box(1.1, 0.42, 0.08, M.goldDark, -1.4 + i * 1.4, 0.72, 0.6));
     counter.add(box(0.22, 0.08, 0.06, M.gold, -1.4 + i * 1.4, 0.72, 0.65));
   }
+  const counterCrown = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.7), M.crownDecal);
+  counterCrown.position.set(0, 0.7, 0.66);
+  counter.add(counterCrown);
   counter.position.set(0, FLOOR_Y, Z_BACK + 1.6);
   group.add(counter);
 
