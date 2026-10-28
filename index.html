@@ -2,131 +2,77 @@
 <html lang="ar" dir="rtl">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <meta name="theme-color" content="#080407" />
-    <meta name="description" content="المتجر السري — متجر ثلاثي الأبعاد تفاعلي. قطع نادرة، حصرية، وقوة أكبر." />
-    <title>SECRET SHOP — المتجر السري</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0b0b0e" />
+    <meta name="description" content="نموذج ثلاثي الأبعاد للمتجر السري — استكشف تفاصيل المتجر من كل الزوايا." />
+    <title>SECRET SHOP — نموذج المتجر</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <!-- ======================= 3D VIEWPORT ======================= -->
-    <div id="app">
-      <canvas id="scene"></canvas>
-      <div id="fx-grade"></div>
-      <div id="fx-vignette"></div>
-      <div id="fx-grain"></div>
-    </div>
+    <main id="app" aria-label="عارض نموذج المتجر ثلاثي الأبعاد">
+      <canvas id="scene" aria-label="نموذج ثلاثي الأبعاد للمتجر، اسحب لتدويره" tabindex="0"></canvas>
+    </main>
 
-    <!-- ======================= LOADER ======================= -->
-    <div id="loader" class="is-loading">
-      <div class="loader-inner">
-        <div class="loader-crown" aria-hidden="true">
-          <svg viewBox="0 0 64 48">
-            <path d="M4 40 L10 12 L22 26 L32 4 L42 26 L54 12 L60 40 Z" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round"/>
-            <circle cx="32" cy="4" r="2.6" fill="currentColor" />
-            <circle cx="10" cy="12" r="2.2" fill="currentColor" />
-            <circle cx="54" cy="12" r="2.2" fill="currentColor" />
-          </svg>
-        </div>
-        <div class="loader-title">SECRET SHOP</div>
-        <div class="loader-sub">جارٍ فتح أبواب المتجر…</div>
-        <div class="loader-bar"><i></i></div>
+    <div id="loader" role="status">
+      <div class="loading-mark" aria-hidden="true">
+        <svg viewBox="0 0 48 40"><path d="M5 31 9 9l9 12L24 4l6 17L39 9l4 22H5Z"/><path d="M8 35h32"/></svg>
       </div>
+      <span>جارٍ تجهيز النموذج</span>
+      <div class="loading-line"><i></i></div>
     </div>
 
-    <!-- ======================= HEADER ======================= -->
-    <header class="hud hud-top">
+    <header class="topbar hud">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
-          <svg viewBox="0 0 64 48">
-            <path d="M4 40 L10 12 L22 26 L32 4 L42 26 L54 12 L60 40 Z" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round"/>
-          </svg>
+          <svg viewBox="0 0 48 40"><path d="M5 31 9 9l9 12L24 4l6 17L39 9l4 22H5Z"/><path d="M8 35h32"/></svg>
         </div>
-        <div class="brand-text">
-          <h1>SECRET <span>SHOP</span></h1>
-          <p>المتجر السري · قطع نادرة وقوة أكبر</p>
+        <div>
+          <h1 dir="ltr">SECRET <span>SHOP</span></h1>
+          <p>نموذج المتجر ثلاثي الأبعاد</p>
         </div>
       </div>
-
-      <div class="badges">
-        <span class="badge"><b>RARE</b> ITEMS</span>
-        <span class="badge"><b>EXCLUSIVE</b></span>
-        <span class="badge"><b>LIMITED</b></span>
-      </div>
+      <div class="model-label" dir="ltr"><span class="status-dot"></span> 3D MODEL <i></i> <span>01 / 01</span></div>
     </header>
 
-    <!-- ======================= SIDE INFO ======================= -->
-    <aside class="hud hud-side" id="infoCard">
-      <button class="side-close" id="infoClose" aria-label="إغلاق">×</button>
-      <p class="eyebrow">داخل المتجر</p>
-      <h2>كل ما تحتاجه…<br /><em>لتصبح أسطورة</em></h2>
-      <ul>
-        <li><span>01</span> صناديق كنوز مضيئة بقطع نادرة</li>
-        <li><span>02</span> كريستالات طاقة تُشعل قوتك</li>
-        <li><span>03</span> أسلحة حصرية بكميات محدودة</li>
-      </ul>
-      <div class="side-actions">
-        <button class="btn btn-primary" id="enterShop2" type="button">ادخل المتجر</button>
-        <button class="btn btn-ghost" id="tourBtn2" type="button">جولة سينمائية</button>
-      </div>
-      <div class="concept-strip" aria-label="تصميم المتجر الأصلي">
-        <a href="/concept/shop-front.png" target="_blank" rel="noopener">
-          <img src="/concept/shop-front.png" alt="تصميم واجهة المتجر" loading="lazy" />
-          <span>الواجهة</span>
-        </a>
-        <a href="/concept/shop-parts.png" target="_blank" rel="noopener">
-          <img src="/concept/shop-parts.png" alt="أجزاء المتجر" loading="lazy" />
-          <span>الأجزاء</span>
-        </a>
-      </div>
-    </aside>
-
-    <!-- ======================= BOTTOM CONTROLS ======================= -->
-    <nav class="hud hud-bottom">
-      <div class="dock">
-        <button class="dock-btn" id="btnTour" type="button" data-tip="جولة سينمائية">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v12H4z"/><path d="M10 9l5 3-5 3z" fill="currentColor" stroke="none"/></svg>
-          <span>جولة</span>
-        </button>
-        <button class="dock-btn" id="btnEnter" type="button" data-tip="ادخل المتجر">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v16h-6"/><path d="M10 8l4 4-4 4"/><path d="M3 12h11"/></svg>
-          <span>ادخل</span>
-        </button>
-        <button class="dock-btn is-on" id="btnSpin" type="button" data-tip="دوران تلقائي">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.5-5.8"/><path d="M20 4v5h-5"/></svg>
-          <span>دوران</span>
-        </button>
-        <button class="dock-btn" id="btnReset" type="button" data-tip="إعادة الزاوية">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3"/></svg>
-          <span>الزاوية</span>
-        </button>
-        <button class="dock-btn" id="btnSound" type="button" data-tip="الصوت">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 10v4h3l4 4V6L7 10z"/><path class="waves" d="M15 9a4 4 0 0 1 0 6M17.5 6.5a8 8 0 0 1 0 11"/></svg>
-          <span>صوت</span>
-        </button>
-        <button class="dock-btn" id="btnInfo" type="button" data-tip="معلومات">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><circle cx="12" cy="7.6" r="1" fill="currentColor" stroke="none"/></svg>
-          <span>عن المتجر</span>
-        </button>
-        <button class="dock-btn" id="btnFull" type="button" data-tip="ملء الشاشة">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
-          <span>شاشة</span>
-        </button>
-      </div>
-      <p class="hint" id="hint">اسحب للدوران · عجلة الماوس للتقريب · كليك يمين للتحريك<span class="hint-touch"> · إصبعين للتقريب</span></p>
-    </nav>
-
-    <!-- ======================= VIEW CHIPS ======================= -->
-    <div class="hud hud-views" id="viewChips">
-      <button class="chip is-active" data-view="hero" type="button">الواجهة</button>
-      <button class="chip" data-view="side" type="button">جانبي</button>
-      <button class="chip" data-view="roof" type="button">السطح</button>
-      <button class="chip" data-view="inside" type="button">الداخل</button>
-      <button class="chip" data-view="top" type="button">من الأعلى</button>
+    <div class="viewer-meta hud" aria-hidden="true">
+      <span>THE SECRET SHOP</span>
+      <i></i>
+      <span>نموذج تفاعلي</span>
     </div>
 
-    <div class="toast" id="toast"></div>
+    <section class="controls hud" aria-label="التحكم في النموذج">
+      <div class="controls-inner">
+        <div class="view-select" role="group" aria-label="زوايا العرض">
+          <span class="control-label">زاوية العرض</span>
+          <div class="views" id="viewChips">
+            <button class="view-btn is-active" type="button" data-view="hero" aria-pressed="true">الواجهة</button>
+            <button class="view-btn" type="button" data-view="side" aria-pressed="false">جانبي</button>
+            <button class="view-btn" type="button" data-view="roof" aria-pressed="false">السقف</button>
+            <button class="view-btn" type="button" data-view="inside" aria-pressed="false">الداخل</button>
+            <button class="view-btn" type="button" data-view="top" aria-pressed="false">من الأعلى</button>
+          </div>
+        </div>
+        <div class="control-divider" aria-hidden="true"></div>
+        <div class="tools" role="group" aria-label="أدوات العرض">
+          <button class="tool-btn" id="btnReset" type="button" aria-label="إعادة الزاوية" title="إعادة الزاوية">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 11a8 8 0 1 1-2.3-5.6"/><path d="M20 4v5h-5"/></svg>
+          </button>
+          <button class="tool-btn" id="btnSpin" type="button" aria-label="تشغيل الدوران التلقائي" aria-pressed="false" title="الدوران التلقائي">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12c0-2.5 4-4.5 9-4.5s9 2 9 4.5-4 4.5-9 4.5"/><path d="m8 14-3 2.5 3 2.5"/></svg>
+          </button>
+          <button class="tool-btn" id="btnFull" type="button" aria-label="ملء الشاشة" title="ملء الشاشة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+          </button>
+          <button class="download-btn" id="btnDownload" type="button" title="حفظ النموذج بخلفية شفافة">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4"/><path d="M4 17v3h16v-3"/></svg>
+            <span>حفظ PNG</span>
+          </button>
+        </div>
+      </div>
+      <p class="hint" id="hint"><span class="hint-icon" aria-hidden="true">✥</span> اسحب لتدوير النموذج <span class="hint-sep">/</span> عجلة الماوس للتقريب</p>
+    </section>
 
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

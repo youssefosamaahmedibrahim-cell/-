@@ -31,8 +31,8 @@ let cache = null;
 export function getMaterials() {
   if (cache) return cache;
 
-  const woodDarkMap = tex(woodTexture({ base: '#241210', dark: '#0d0505', light: '#3d231a' }), { repeat: [1, 1] });
-  const woodWallMap = tex(woodTexture({ base: '#20100f', dark: '#0b0404', light: '#40251b', planks: 7, horizontal: true, seed: 7 }), { repeat: [2, 1] });
+  const woodDarkMap = tex(woodTexture({ base: '#321b16', dark: '#120908', light: '#65402c' }), { repeat: [1, 1] });
+  const woodWallMap = tex(woodTexture({ base: '#30201b', dark: '#100807', light: '#67402c', planks: 7, horizontal: true, seed: 7 }), { repeat: [2, 1] });
   const stoneMap = tex(stoneTexture({ base: '#151016', tile: 128 }), { repeat: [4, 4] });
   const roofMap = tex(roofTexture(), { repeat: [3, 3] });
   const signMap = tex(signTexture(), { repeat: [1, 1] });
@@ -62,7 +62,7 @@ export function getMaterials() {
     iron: new THREE.MeshStandardMaterial({ color: 0x2b2630, roughness: 0.45, metalness: 0.9 }),
 
     /* ---------------- cloth ---------------- */
-    cloth: new THREE.MeshStandardMaterial({ color: 0xffffff, map: bannerMap, roughness: 0.92, metalness: 0.0, side: THREE.DoubleSide, alphaTest: 0.35 }),
+    cloth: new THREE.MeshStandardMaterial({ color: 0xc6aaaa, map: bannerMap, roughness: 0.92, metalness: 0.0, side: THREE.DoubleSide, alphaTest: 0.35 }),
     rug: new THREE.MeshStandardMaterial({ color: 0xffffff, map: rugMap, roughness: 0.95 }),
     crownDecal: new THREE.MeshStandardMaterial({ color: 0xffffff, map: crownMap, transparent: true, roughness: 0.4, metalness: 0.6, emissive: 0xff9a3c, emissiveIntensity: 0.25, depthWrite: false }),
 
@@ -70,7 +70,7 @@ export function getMaterials() {
     sign: new THREE.MeshStandardMaterial({
       map: signMap, transparent: true, alphaTest: 0.12,
       roughness: 0.42, metalness: 0.35,
-      emissive: 0xffffff, emissiveMap: signMap, emissiveIntensity: 0.62,
+      emissive: 0xffffff, emissiveMap: signMap, emissiveIntensity: 0.48,
       side: THREE.DoubleSide,
     }),
     signBack: new THREE.MeshStandardMaterial({ color: 0x120a0e, roughness: 0.7, metalness: 0.3 }),
@@ -82,10 +82,10 @@ export function getMaterials() {
     window: new THREE.MeshStandardMaterial({ color: 0x110806, map: windowMap, emissive: 0xffd0a0, emissiveMap: windowMap, emissiveIntensity: 0.62, roughness: 0.6 }),
     amber: new THREE.MeshStandardMaterial({ color: 0x3a1a06, emissive: 0xff8a35, emissiveIntensity: 1.25, roughness: 0.5 }),
     amberDim: new THREE.MeshStandardMaterial({ color: 0x2a1205, emissive: 0xff7a2a, emissiveIntensity: 0.9, roughness: 0.6 }),
-    crystalRed: new THREE.MeshStandardMaterial({ color: 0x5c0010, emissive: 0xff2a34, emissiveIntensity: 2.2, roughness: 0.25, metalness: 0.3, transparent: true, opacity: 0.95 }),
-    crystalBlue: new THREE.MeshStandardMaterial({ color: 0x0a1a3a, emissive: 0x5f9dff, emissiveIntensity: 2.2, roughness: 0.2, metalness: 0.4, transparent: true, opacity: 0.95 }),
-    potion: new THREE.MeshStandardMaterial({ color: 0x220a20, emissive: 0xa855ff, emissiveIntensity: 1.6, roughness: 0.3 }),
-    potionGold: new THREE.MeshStandardMaterial({ color: 0x2a1a05, emissive: 0xffb347, emissiveIntensity: 1.7, roughness: 0.3 }),
+    crystalRed: new THREE.MeshStandardMaterial({ color: 0x5c0010, emissive: 0xff2a34, emissiveIntensity: 1.4, roughness: 0.25, metalness: 0.3, transparent: true, opacity: 0.95 }),
+    crystalBlue: new THREE.MeshStandardMaterial({ color: 0x0a1a3a, emissive: 0x5f9dff, emissiveIntensity: 1.2, roughness: 0.2, metalness: 0.4, transparent: true, opacity: 0.95 }),
+    potion: new THREE.MeshStandardMaterial({ color: 0x220a20, emissive: 0xa855ff, emissiveIntensity: 0.9, roughness: 0.3 }),
+    potionGold: new THREE.MeshStandardMaterial({ color: 0x2a1a05, emissive: 0xffb347, emissiveIntensity: 1.0, roughness: 0.3 }),
 
     /* ---------------- signs / decals ---------------- */
     boardLeft: new THREE.MeshStandardMaterial({ color: 0xffffff, map: boardL, roughness: 0.8, emissive: 0xffc07a, emissiveIntensity: 0.12 }),
@@ -103,7 +103,7 @@ export function getMaterials() {
 
     /* ---------------- textures kept for later use ---------------- */
     _textures: { signMap, bannerMap, glowMap, sparkMap, crownMap, roofMap },
-    roofMat: new THREE.MeshStandardMaterial({ color: 0xdcd8e6, map: roofMap, roughness: 0.34, metalness: 0.65, envMapIntensity: 1.8 }),
+    roofMat: new THREE.MeshStandardMaterial({ color: 0xbbb3bd, map: roofMap, bumpMap: roofMap, bumpScale: 0.12, roughness: 0.62, metalness: 0.28, envMapIntensity: 0.8 }),
     roofUnder: new THREE.MeshStandardMaterial({ color: 0x3c2836, roughness: 0.85, metalness: 0.25, side: THREE.DoubleSide }),
   };
 

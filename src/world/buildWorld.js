@@ -1,133 +1,74 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createShop } from './shop.js';
-import { createSurroundings, createWaterfall } from './surroundings.js';
-import { createAtmosphere, createEnvironment } from './atmosphere.js';
 
-/* زوايا الكاميرا الجاهزة */
+// كل الزوايا تدور حول الموديل نفسه، بدون مشهد أو أرضية خارجية.
 export const VIEWS = {
-  hero: { pos: [20.5, 13.5, 36], target: [0, 10.4, 0.5], fov: 40 },
-  front: { pos: [0.6, 11, 38], target: [0, 10.2, 0], fov: 36 },
-  side: { pos: [31, 12.5, 17], target: [2, 9.5, 0], fov: 40 },
-  roof: { pos: [17, 23, 24], target: [0, 12.8, 0], fov: 40 },
-  closeup: { pos: [6.5, 6.6, 18.5], target: [0, 8.2, 2], fov: 44 },
-  inside: { pos: [0, 4.4, 8.2], target: [0, 4.3, -5], fov: 62 },
-  top: { pos: [2, 40, 20], target: [0, 7, 0], fov: 42 },
-  shopFront: { pos: [0, 8.0, 27], target: [0, 8.2, 0], fov: 42 },
-  crest: { pos: [7.5, 18.2, 17.5], target: [0, 16.4, 7.2], fov: 34 },
-  waterfall: { pos: [-7, 7, 20], target: [-19, 5.5, 6], fov: 44 },
+  hero: { pos: [22, 16.5, 48], target: [0, 8.1, 0], fov: 37 },
+  front: { pos: [0, 12.5, 50], target: [0, 8.1, 0], fov: 37 },
+  side: { pos: [43, 16, 28], target: [0, 8.2, 0], fov: 39 },
+  roof: { pos: [24, 29, 38], target: [0, 7.5, 0], fov: 46 },
+  inside: { pos: [0, 4.6, 7.7], target: [0, 4.2, -5], fov: 60 },
+  top: { pos: [0, 49, 12], target: [0, 7.5, 1.5], fov: 43 },
 };
 
 export function createWorld(renderer) {
   const scene = new THREE.Scene();
-  scene.fog = new THREE.FogExp2(0x090405, 0.0062);
-
-  /* ---------------- البيئة ---------------- */
+  // خريطة انعكاس للذهب فقط: لا توجد سماء أو خلفية مرسومة في المشهد.
   if (renderer) {
-    scene.environment = createEnvironment(renderer);
-    scene.environmentIntensity = 0.75;
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    const room = new RoomEnvironment();
+    scene.environment = pmrem.fromScene(room, 0.04).texture;
+    scene.environmentIntensity = 0.65;
+    room.dispose();
+    pmrem.dispose();
   }
 
-  /* ---------------- الإضاءة ---------------- */
-  const hemi = new THREE.HemisphereLight(0x3c1626, 0x050308, 0.32);
+  const hemi = new THREE.HemisphereLight(0xffe6d5, 0x514554, 1.2);
   scene.add(hemi);
 
-  const moon = new THREE.DirectionalLight(0x9d7cc4, 0.78);
-  moon.position.set(-22, 38, 26);
-  moon.castShadow = true;
-  moon.shadow.mapSize.set(2048, 2048);
-  moon.shadow.camera.near = 1;
-  moon.shadow.camera.far = 120;
-  moon.shadow.camera.left = -38;
-  moon.shadow.camera.right = 38;
-  moon.shadow.camera.top = 44;
-  moon.shadow.camera.bottom = -14;
-  moon.shadow.bias = -0.0006;
-  moon.shadow.normalBias = 0.03;
-  scene.add(moon);
+  const key = new THREE.DirectionalLight(0xffdfc4, 2.6);
+  key.position.set(-18, 30, 28);
+  key.castShadow = true;
+  key.shadow.mapSize.set(2048, 2048);
+  Object.assign(key.shadow.camera, { near: 1, far: 100, left: -25, right: 25, top: 26, bottom: -20 });
+  key.shadow.bias = -0.0003;
+  key.shadow.normalBias = 0.035;
+  scene.add(key);
 
-  const rim = new THREE.DirectionalLight(0xff4a3a, 0.3);
-  rim.position.set(6, 6, -30);
+  const fill = new THREE.DirectionalLight(0xc3d4ff, 1.0);
+  fill.position.set(24, 16, 20);
+  scene.add(fill);
+
+  const rim = new THREE.DirectionalLight(0xff5c43, 1.45);
+  rim.position.set(-8, 20, -24);
   scene.add(rim);
 
-  const front = new THREE.DirectionalLight(0xff8a5a, 0.22);
-  front.position.set(4, 4, 40);
+  const front = new THREE.DirectionalLight(0xffbe91, 0.65);
+  front.position.set(0, 9, 34);
   scene.add(front);
 
-  /* ---------------- العالم ---------------- */
-  const atmosphere = createAtmosphere();
-  atmosphere.group.name = 'atmosphere';
-  scene.add(atmosphere.group);
-
-  const surroundings = createSurroundings();
-  surroundings.group.name = 'surroundings';
-  scene.add(surroundings.group);
-
-  const waterfall = createWaterfall();
-  waterfall.group.name = 'waterfall';
-  scene.add(waterfall.group);
-
   const shop = createShop();
-  shop.group.name = 'shop';
   scene.add(shop.group);
 
-  /* ---------------- إضاءة الواجهة (لمسات دافئة) ---------------- */
-  const facadeLights = [];
-  for (const [x, y, z, color, intensity, dist] of [
-    [-6.8, 4.4, 10.6, 0xff7a30, 34, 15],
-    [6.8, 4.4, 10.6, 0xff7a30, 34, 15],
-    [-11.6, 9.2, 9.6, 0xff2018, 24, 13],
-    [11.6, 9.2, 9.6, 0xff2018, 24, 13],
-    [0, 9.8, 3.4, 0xff9040, 30, 15],
-    [0, 3.6, 13.0, 0xffb070, 20, 11],
+  // الإضاءة مرتبطة بالمبنى نفسه لإبراز المدخل واللافتة من غير مؤثرات في الخلفية.
+  const lamps = [];
+  for (const [x, y, z, color, intensity, distance] of [
+    [-6.5, 5, 9, 0xff6b32, 35, 13],
+    [6.5, 5, 9, 0xff6b32, 35, 13],
+    [0, 10.8, 10.5, 0xff5141, 22, 15],
+    [0, 4.7, 7.2, 0xffad68, 26, 12],
   ]) {
-    const l = new THREE.PointLight(color, intensity, dist, 2);
-    l.position.set(x, y, z);
-    scene.add(l);
-    facadeLights.push(l);
+    const light = new THREE.PointLight(color, intensity, distance, 2);
+    light.position.set(x, y, z);
+    scene.add(light);
+    lamps.push(light);
   }
 
-  /* ---------------- كشافات على الواجهة والسقف ---------------- */
-  const spotFront = new THREE.SpotLight(0xffd0a0, 320, 60, Math.PI / 5.2, 0.55, 1.6);
-  spotFront.position.set(0, 24, 34);
-  spotFront.target.position.set(0, 8, 2);
-  scene.add(spotFront, spotFront.target);
-
-  const spotSide = new THREE.SpotLight(0xff8a5a, 180, 60, Math.PI / 4.6, 0.7, 1.6);
-  spotSide.position.set(-26, 20, 20);
-  spotSide.target.position.set(-6, 8, 0);
-  scene.add(spotSide, spotSide.target);
-
-  const spotRoof = new THREE.SpotLight(0xb98cff, 200, 60, Math.PI / 5, 0.8, 1.6);
-  spotRoof.position.set(18, 30, 18);
-  spotRoof.target.position.set(0, 15, 0);
-  scene.add(spotRoof, spotRoof.target);
-
-  /* ---------------- إضاءة الشعار العلوي ---------------- */
-  const crestLightA = new THREE.PointLight(0xff2a18, 22, 7, 2);
-  crestLightA.position.set(0, 17.0, 9.8);
-  scene.add(crestLightA);
-
-  /* ---------------- إضاءة درامية إضافية ---------------- */
-  const signLight = new THREE.PointLight(0xff3a24, 26, 20, 2);
-  signLight.position.set(0, 13.5, 11);
-  scene.add(signLight);
-
-  const porchLight = new THREE.PointLight(0xff8a4a, 40, 20, 2);
-  porchLight.position.set(0, 5.5, 10.5);
-  scene.add(porchLight);
-
-  const roofLight = new THREE.PointLight(0xff3a28, 16, 16, 2);
-  roofLight.position.set(0, 15.2, 8.5);
-  scene.add(roofLight);
-
-  const update = (t, dt) => {
-    atmosphere.update(t, dt);
-    surroundings.update(t, dt);
-    waterfall.update(t, dt);
-    shop.update(t, dt);
-    signLight.intensity = 24 + Math.sin(t * 2.3) * 4;
-    roofLight.intensity = 15 + Math.sin(t * 1.1 + 1) * 3;
+  return {
+    scene,
+    shop,
+    update: (time, dt) => shop.update(time, dt),
+    lights: { hemi, key, fill, rim, front, lamps },
   };
-
-  return { scene, update, shop, lights: { hemi, moon, rim, front, signLight, porchLight, roofLight, facadeLights } };
 }

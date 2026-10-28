@@ -178,29 +178,39 @@ export function createRoof({
         pts.push(new THREE.Vector3(u * hw, roofHeight(u, v, P) + 0.06, v * hd));
       }
       g.add(tubeFromPoints(pts, 0.1, M.woodTrim, 24, false, 5));
-      g.add(tubeFromPoints(pts.map((p) => p.clone().setY(p.y + 0.06)), 0.045, trimColor || M.neonRed, 24, false, 4));
+      if (hipGlow) g.add(tubeFromPoints(pts.map((p) => p.clone().setY(p.y + 0.06)), 0.035, trimColor || M.neonSoft, 24, false, 4));
     }
   }
 
-  /* ---------- زخارف الأطراف الذهبية ---------- */
+  /* ---------- مداميك مرتفعة فوق القرميد ---------- */
+  for (let row = 2; row <= 9; row++) {
+    const t = row / 10;
+    for (const sign of [-1, 1]) {
+      const front = [], side = [];
+      for (let i = 0; i <= 12; i++) {
+        const k = -t + (2 * t * i) / 12;
+        const fp = at(k, sign * t); fp.y += 0.025; front.push(fp);
+        const sp = at(sign * t, k); sp.y += 0.025; side.push(sp);
+      }
+      g.add(tubeFromPoints(front, 0.025, M.roofUnder, 16, false, 4));
+      g.add(tubeFromPoints(side, 0.025, M.roofUnder, 16, false, 4));
+    }
+  }
+
+  /* ---------- نهايات معدنية مدببة متصلة بالسقف ---------- */
   if (finials) {
     for (const [sx, sz] of [[1, 1], [1, -1], [-1, 1], [-1, -1]]) {
       const p = at(sx, sz);
       const finial = new THREE.Group();
-      const ball = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 10), M.gold);
-      ball.position.y = 0.16;
-      finial.add(ball);
-      const spike = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.62, 8), M.gold);
-      spike.position.y = 0.62;
+      finial.add(box(0.55, 0.14, 0.55, M.goldDark, 0, 0.05, 0));
+      const spike = new THREE.Mesh(new THREE.ConeGeometry(0.19, 0.55, 4), M.goldDark);
+      spike.position.set(0, 0.35, 0);
+      spike.rotation.y = Math.PI / 4;
       finial.add(spike);
-      const curl = new THREE.Mesh(new THREE.TorusGeometry(0.17, 0.045, 6, 14, Math.PI * 1.3), M.gold);
-      curl.position.set(0, 0.95, 0);
-      curl.rotation.set(Math.PI / 2, 0, Math.PI * 0.15);
-      finial.add(curl);
+      const tip = new THREE.Mesh(new THREE.OctahedronGeometry(0.12, 0), M.neonSoft);
+      tip.position.y = 0.68;
+      finial.add(tip);
       finial.position.copy(p);
-      finial.position.y += 0.05;
-      const glow = sprite(M.glowSpriteGold, 1.6, 0, 0.3, 0);
-      finial.add(glow);
       g.add(finial);
     }
   }
@@ -212,13 +222,13 @@ export function createRoof({
       const [u, v] = loop[i];
       const p = at(u, v);
       const out = new THREE.Vector3(p.x, 0, p.z).normalize();
-      const beam = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.16, 1.9), M.woodTrim);
-      const r = Math.hypot(p.x, p.z) + 0.55;
+      const beam = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.16, 1.25), M.woodTrim);
+      const r = Math.hypot(p.x, p.z) - 0.22;
       beam.position.set(out.x * r, p.y - thickness - 0.16, out.z * r);
       beam.rotation.y = Math.atan2(out.x, out.z);
       beam.rotation.x = -0.12;
       g.add(beam);
-      const gold = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.07, 1.95), M.goldDark);
+      const gold = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.07, 1.28), M.goldDark);
       gold.position.copy(beam.position).setY(beam.position.y - 0.1);
       gold.rotation.copy(beam.rotation);
       g.add(gold);
@@ -359,69 +369,73 @@ export function createCrown({ size = 1 } = {}) {
 export function createChest({ size = 1, open = false, glowColor = 0xffb35a, withLight = false } = {}) {
   const M = getMaterials();
   const g = new THREE.Group();
-  const w = 1.5, h = 0.95, d = 1.05;
+  const w = 1.5, h = 0.9, d = 1.05;
 
-  const body = box(w, h, d, M.woodDark, 0, h / 2, 0);
-  g.add(body);
-  // ألواح ذهبية
-  for (const sx of [-0.45, 0.45]) {
-    const bandM = box(0.09, h + 0.02, d + 0.03, M.goldDark, sx * w * 0.5 * 1.4, h / 2, 0);
-    g.add(bandM);
-    const bandS = box(0.09, h + 0.02, d + 0.03, M.goldDark, sx * w * 0.5 * 0.2, h / 2, 0);
-    g.add(bandS);
+  // جدران وأركان مستقلة بدل كتلة واحدة، مع ألواح ومسامير معدنية.
+  g.add(box(w, 0.12, d, M.woodDark, 0, 0.06, 0));
+  for (const z of [-d / 2 + 0.07, d / 2 - 0.07]) {
+    g.add(box(w, h, 0.14, M.woodDark, 0, h / 2, z));
+    g.add(box(w, 0.07, 0.05, M.goldDark, 0, 0.16, z + Math.sign(z) * 0.08));
   }
-  const foot = box(w + 0.08, 0.1, d + 0.08, M.goldDark, 0, 0.05, 0);
-  g.add(foot);
-
-  // الغطاء
-  const lid = new THREE.Group();
-  const lidGeo = new THREE.CylinderGeometry(d / 2, d / 2, w, 14, 1, false, Math.PI / 2, Math.PI);
-  const lidMesh = new THREE.Mesh(lidGeo, M.woodDark);
-  lidMesh.rotation.z = Math.PI / 2;
-  lidMesh.position.y = 0;
-  lid.add(lidMesh);
-  const lidRimGeo = new THREE.TorusGeometry(d / 2, 0.05, 6, 18, Math.PI);
   for (const sx of [-1, 1]) {
-    const r = new THREE.Mesh(lidRimGeo, M.goldDark);
-    r.rotation.y = Math.PI / 2;
-    r.position.set(sx * (w / 2 - 0.02), 0, 0);
-    lid.add(r);
+    g.add(box(0.14, h, d, M.woodDark, sx * (w / 2 - 0.07), h / 2, 0));
+    g.add(box(0.1, h + 0.02, d + 0.04, M.goldDark, sx * (w / 2 - 0.17), h / 2, 0));
   }
-  // أشرطة ذهبية على الغطاء
-  for (const t of [-0.55, 0, 0.55]) {
-    const band = new THREE.Mesh(new THREE.TorusGeometry(d / 2 + 0.01, 0.035, 5, 16, Math.PI), M.goldDark);
-    band.rotation.y = Math.PI / 2;
-    band.position.set(t * w * 0.5, 0, 0);
-    lid.add(band);
-  }
-  lid.position.y = h;
-  if (open) lid.rotation.x = -1.15;
-  g.add(lid);
+  g.add(box(w + 0.08, 0.1, d + 0.08, M.goldDark, 0, 0.04, 0));
+  g.add(box(w + 0.06, 0.08, d + 0.06, M.goldDark, 0, h - 0.04, 0));
 
-  // القفل
-  const lock = box(0.24, 0.3, 0.06, M.gold, 0, h * 0.72, d / 2 + 0.02);
+  // غطاء مقبب بسطح حقيقي ومفصلة عند الخلف.
+  const lidShape = new THREE.Shape();
+  lidShape.moveTo(-d / 2, 0);
+  lidShape.quadraticCurveTo(-d / 2, 0.44, 0, 0.44);
+  lidShape.quadraticCurveTo(d / 2, 0.44, d / 2, 0);
+  lidShape.closePath();
+  const lidGeometry = new THREE.ExtrudeGeometry(lidShape, {
+    depth: w, bevelEnabled: true, bevelSize: 0.025, bevelThickness: 0.025, bevelSegments: 2,
+  });
+  lidGeometry.rotateY(Math.PI / 2);
+  lidGeometry.translate(-w / 2, 0, 0);
+  const hinge = new THREE.Group();
+  const lid = new THREE.Group();
+  lid.add(new THREE.Mesh(lidGeometry, M.woodDark));
+  for (const sx of [-1, 1]) {
+    const arc = [];
+    for (let i = 0; i <= 12; i++) {
+      const z = -d / 2 + (i / 12) * d;
+      const y = 0.44 * Math.sqrt(Math.max(0, 1 - (z / (d / 2)) ** 2));
+      arc.push(new THREE.Vector3(sx * (w / 2 - 0.18), y + 0.025, z));
+    }
+    lid.add(tubeFromPoints(arc, 0.045, M.goldDark, 24, false, 5));
+  }
+  lid.position.z = d / 2;
+  hinge.position.set(0, h, -d / 2);
+  hinge.add(lid);
+  if (open) hinge.rotation.x = -0.9;
+  g.add(hinge);
+
+  const lock = box(0.24, 0.3, 0.08, M.gold, 0, h * 0.75, d / 2 + 0.035);
   g.add(lock);
+  const pin = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), M.iron);
+  pin.position.set(0, h * 0.76, d / 2 + 0.085);
+  g.add(pin);
 
   if (open) {
-    const innerGlow = box(w * 0.85, 0.02, d * 0.75, M.amberDim, 0, h - 0.02, 0);
-    g.add(innerGlow);
+    g.add(box(w * 0.78, 0.06, d * 0.72, M.amberDim, 0, h * 0.66, 0));
     if (withLight) {
       const light = new THREE.PointLight(glowColor, 5, 7, 2);
-      light.position.set(0, h + 0.4, 0);
+      light.position.set(0, h + 0.3, 0);
       g.add(light);
     }
-    const glow = sprite(M.glowSpriteGold, 3.2, 0, h + 0.2, 0);
-    glow.material.opacity = 0.5;
+    const glow = sprite(M.glowSpriteGold, 2.0, 0, h + 0.1, 0);
+    glow.material.opacity = 0.3;
     g.add(glow);
-    // كنز صغير
     for (let i = 0; i < 5; i++) {
-      const c = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), M.gold);
-      c.position.set(rand(-0.5, 0.5), h + 0.03, rand(-0.3, 0.3));
-      c.rotation.set(rand(0, 3), rand(0, 3), rand(0, 3));
-      g.add(c);
+      const coin = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), M.gold);
+      coin.position.set(rand(-0.5, 0.5), h * 0.72 + rand(0, 0.1), rand(-0.28, 0.28));
+      coin.rotation.set(rand(0, 3), rand(0, 3), rand(0, 3));
+      g.add(coin);
     }
   }
-
   g.scale.setScalar(size);
   return g;
 }
@@ -460,36 +474,38 @@ export function createPlant({ size = 1, pot = true } = {}) {
   const M = getMaterials();
   const g = new THREE.Group();
   if (pot) {
-    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.44, 0.34, 0.5, 10), M.woodTrim);
-    p.position.y = 0.25;
-    g.add(p);
-    const rim = new THREE.Mesh(new THREE.TorusGeometry(0.44, 0.05, 5, 12), M.goldDark);
-    rim.position.y = 0.5;
-    rim.rotation.x = Math.PI / 2;
-    g.add(rim);
-    const soil = new THREE.Mesh(new THREE.CircleGeometry(0.4, 12), M.rock);
+    // صندوق نباتات خشبي مثل بقية تفاصيل الواجهة.
+    g.add(box(0.85, 0.62, 0.85, M.woodDark, 0, 0.31, 0));
+    g.add(box(0.94, 0.09, 0.94, M.goldDark, 0, 0.61, 0));
+    g.add(box(0.94, 0.09, 0.94, M.woodTrim, 0, 0.08, 0));
+    for (const sx of [-1, 1]) {
+      g.add(box(0.07, 0.55, 0.07, M.goldDark, sx * 0.34, 0.32, 0.45));
+    }
+    const soil = new THREE.Mesh(new THREE.PlaneGeometry(0.74, 0.74), M.rock);
     soil.rotation.x = -Math.PI / 2;
-    soil.position.y = 0.5;
+    soil.position.y = 0.65;
     g.add(soil);
   }
-  const leaves = 9;
-  for (let i = 0; i < leaves; i++) {
-    const a = (i / leaves) * Math.PI * 2 + rand(-0.2, 0.2);
-    const h = rand(0.7, 1.5) * size;
-    const geo = new THREE.ConeGeometry(rand(0.1, 0.18) * size, h, 4, 1);
-    geo.translate(0, h / 2, 0);
-    const leaf = new THREE.Mesh(geo, i % 3 === 0 ? M.leafTeal : M.leafDark);
-    leaf.position.set(Math.cos(a) * 0.15, 0.5, Math.sin(a) * 0.15);
-    leaf.rotation.set(Math.cos(a) * rand(0.35, 0.75), a, Math.sin(a) * rand(0.35, 0.75));
-    leaf.scale.z = 0.45;
-    g.add(leaf);
+  // أوراق عريضة محدبة، وليست مخاريط رفيعة.
+  for (let i = 0; i < 13; i++) {
+    const a = (i / 13) * Math.PI * 2;
+    const height = rand(0.7, 1.35);
+    const width = rand(0.18, 0.3);
+    const leafShape = new THREE.Shape();
+    leafShape.moveTo(0, 0);
+    leafShape.quadraticCurveTo(-width, height * 0.35, 0, height);
+    leafShape.quadraticCurveTo(width, height * 0.35, 0, 0);
+    const leaf = new THREE.Mesh(new THREE.ExtrudeGeometry(leafShape, {
+      depth: 0.025, bevelEnabled: false, curveSegments: 4,
+    }), i % 3 === 0 ? M.leafTeal : M.leafDark);
+    const stem = new THREE.Group();
+    stem.position.set(Math.cos(a) * 0.12, 0.6, Math.sin(a) * 0.12);
+    stem.rotation.y = a;
+    leaf.rotation.x = rand(0.35, 0.95);
+    stem.add(leaf);
+    g.add(stem);
   }
-  // زهور حمراء
-  for (let i = 0; i < 3; i++) {
-    const f = new THREE.Mesh(new THREE.IcosahedronGeometry(0.1, 0), M.flowerRed);
-    f.position.set(rand(-0.35, 0.35), 0.65 + rand(0, 0.3), rand(-0.35, 0.35));
-    g.add(f);
-  }
+  g.scale.setScalar(size);
   return g;
 }
 
@@ -595,19 +611,18 @@ export function createSignBoard({ material, w = 3.4, h = 3.4, posts = true, tilt
 export function createPillar({ h = 7, r = 0.34, rings = 3 } = {}) {
   const M = getMaterials();
   const g = new THREE.Group();
-  const body = new THREE.Mesh(new THREE.CylinderGeometry(r * 0.92, r, h, 12), M.woodBeam);
-  body.position.y = h / 2;
-  body.castShadow = true; body.receiveShadow = true;
-  g.add(body);
-  for (let i = 0; i < rings; i++) {
-    const ring = new THREE.Mesh(new THREE.TorusGeometry(r * 0.99, 0.055, 6, 16), M.goldDark);
-    ring.position.y = (h / (rings + 1)) * (i + 1);
-    ring.rotation.x = Math.PI / 2;
-    g.add(ring);
+  const width = r * 2;
+  g.add(box(width, h, width, M.woodBeam, 0, h / 2, 0));
+  // خطوط طولية وحلقات نحاسية مربعة تبرز مقطع العمود.
+  for (const sx of [-1, 1]) {
+    g.add(box(0.045, h - 0.5, 0.045, M.woodTrim, sx * width * 0.33, h / 2, width / 2 + 0.01));
   }
-  const cap = new THREE.Mesh(new THREE.CylinderGeometry(r * 1.3, r * 1.05, 0.22, 12), M.goldDark);
-  cap.position.y = 0.11;
-  g.add(cap);
+  for (let i = 0; i < rings; i++) {
+    const y = (h / (rings + 1)) * (i + 1);
+    g.add(box(width + 0.08, 0.11, width + 0.08, M.goldDark, 0, y, 0));
+  }
+  g.add(box(width + 0.18, 0.22, width + 0.18, M.goldDark, 0, 0.11, 0));
+  g.add(box(width + 0.14, 0.18, width + 0.14, M.woodTrim, 0, h - 0.09, 0));
   return g;
 }
 
