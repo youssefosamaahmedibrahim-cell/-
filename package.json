@@ -1,0 +1,31 @@
+{
+  "name": "secret-shop-3d",
+  "version": "1.0.0",
+  "description": "متجر SECRET SHOP ثلاثي الأبعاد — صفحة ويب تفاعلية بـ Three.js",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/youssefosamaahmedibrahim-cell/-.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/youssefosamaahmedibrahim-cell/-/issues"
+  },
+  "homepage": "https://github.com/youssefosamaahmedibrahim-cell/-#readme",
+  "dependencies": {
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "eslint": "^9.39.5",
+    "vite": "^5.4.10"
+  },
+  "type": "module",
+  "private": true
+}
